@@ -19,6 +19,7 @@ import { StockAdjustModal } from './components/StockAdjustModal';
 import { RepaymentModal } from './components/RepaymentModal';
 import { ReceiptModal } from './components/ReceiptModal';
 import { WhatsAppReminderModal } from './components/WhatsAppReminderModal';
+import { BizTrackLogo } from './components/BizTrackLogo';
 
 import {
   LayoutDashboard,
@@ -178,9 +179,7 @@ const AppContent: React.FC = () => {
               onClick={() => setActiveTab('dashboard')}
               className="flex items-center space-x-2.5 cursor-pointer group min-w-0"
             >
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-600 to-emerald-400 flex items-center justify-center text-white shadow-md font-extrabold text-base tracking-wider group-hover:scale-105 transition">
-                BT
-              </div>
+              <BizTrackLogo size="md" className="group-hover:scale-105 transition" />
               <div className="min-w-0">
                 <span className="font-extrabold text-base tracking-tight text-white block leading-tight">
                   BizTrack<span className="text-emerald-400">.ng</span>
@@ -455,72 +454,89 @@ const AppContent: React.FC = () => {
         </main>
       </div>
 
-      {/* MOBILE-FIRST BOTTOM NAVIGATION BAR (Android & iOS Safe Area) */}
-      <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200 shadow-lg px-2 py-1.5 flex items-center justify-around safe-bottom">
-        <button
-          onClick={() => setActiveTab('dashboard')}
-          className={`flex flex-col items-center py-1 px-2 rounded-xl transition min-w-[50px] min-h-[44px] justify-center ${
-            activeTab === 'dashboard' ? 'text-emerald-700 font-bold' : 'text-slate-500'
-          }`}
-        >
-          <LayoutDashboard className="w-5 h-5" />
-          <span className="text-[10px] mt-0.5">Home</span>
-        </button>
-
-        <button
-          onClick={() => setActiveTab('sales')}
-          className={`flex flex-col items-center py-1 px-2 rounded-xl transition min-w-[50px] min-h-[44px] justify-center ${
-            activeTab === 'sales' ? 'text-emerald-700 font-bold' : 'text-slate-500'
-          }`}
-        >
-          <ShoppingBag className="w-5 h-5" />
-          <span className="text-[10px] mt-0.5">Sales</span>
-        </button>
-
-        {/* Center Prominent Record Sale Floating Action */}
+      {/* MOBILE FLOATING ACTION BUTTON (+) - Mathematically Centered, Elevated Above Nav Bar */}
+      <div className="lg:hidden fixed left-1/2 -translate-x-1/2 bottom-[calc(4rem+env(safe-area-inset-bottom,0px)+0.65rem)] z-50">
         <button
           onClick={() => setIsRecordSaleOpen(true)}
-          className="-mt-5 w-12 h-12 rounded-full bg-emerald-600 text-white flex items-center justify-center shadow-lg shadow-emerald-900/30 active:scale-95 transition"
-          aria-label="Record Sale"
+          className="w-12 h-12 rounded-full bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white flex items-center justify-center shadow-xl shadow-emerald-950/30 border-2 border-white active:scale-95 transition-all focus:outline-none"
+          aria-label="Record a Sale"
+          title="Record a Sale"
         >
-          <Plus className="w-6 h-6" />
+          <Plus className="w-6 h-6 stroke-[2.5]" />
         </button>
+      </div>
 
-        <button
-          onClick={() => setActiveTab('inventory')}
-          className={`flex flex-col items-center py-1 px-2 rounded-xl relative transition min-w-[50px] min-h-[44px] justify-center ${
-            activeTab === 'inventory' ? 'text-emerald-700 font-bold' : 'text-slate-500'
-          }`}
-        >
-          <Package className="w-5 h-5" />
-          <span className="text-[10px] mt-0.5">Stock</span>
-          {lowStockProducts.length > 0 && (
-            <span className="absolute top-1 right-2.5 w-2 h-2 rounded-full bg-amber-500" />
-          )}
-        </button>
+      {/* MOBILE-FIRST BOTTOM NAVIGATION BAR (Android & iOS Safe Area) - 5 Evenly Distributed Destinations */}
+      <nav
+        aria-label="Mobile Navigation"
+        className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200/90 shadow-[0_-4px_20px_rgba(0,0,0,0.06)] px-1 pb-[env(safe-area-inset-bottom,0px)]"
+      >
+        <div className="grid grid-cols-5 h-16 w-full max-w-lg mx-auto items-center">
+          {/* 1. Home */}
+          <button
+            onClick={() => setActiveTab('dashboard')}
+            className={`w-full h-full flex flex-col items-center justify-center py-1 transition min-h-[44px] ${
+              activeTab === 'dashboard' ? 'text-emerald-700 font-bold' : 'text-slate-500 hover:text-slate-700'
+            }`}
+          >
+            <LayoutDashboard className="w-5 h-5" />
+            <span className="text-[10px] tracking-tight mt-0.5">Home</span>
+          </button>
 
-        <button
-          onClick={() => setActiveTab('debts')}
-          className={`flex flex-col items-center py-1 px-2 rounded-xl relative transition min-w-[50px] min-h-[44px] justify-center ${
-            activeTab === 'debts' ? 'text-emerald-700 font-bold' : 'text-slate-500'
-          }`}
-        >
-          <CreditCard className="w-5 h-5" />
-          <span className="text-[10px] mt-0.5">Debts</span>
-          {activeDebtsCount > 0 && (
-            <span className="absolute top-1 right-2.5 w-2 h-2 rounded-full bg-rose-500" />
-          )}
-        </button>
+          {/* 2. Sales */}
+          <button
+            onClick={() => setActiveTab('sales')}
+            className={`w-full h-full flex flex-col items-center justify-center py-1 transition min-h-[44px] ${
+              activeTab === 'sales' ? 'text-emerald-700 font-bold' : 'text-slate-500 hover:text-slate-700'
+            }`}
+          >
+            <ShoppingBag className="w-5 h-5" />
+            <span className="text-[10px] tracking-tight mt-0.5">Sales</span>
+          </button>
 
-        <button
-          onClick={() => setActiveTab('reports')}
-          className={`flex flex-col items-center py-1 px-2 rounded-xl transition min-w-[50px] min-h-[44px] justify-center ${
-            activeTab === 'reports' ? 'text-emerald-700 font-bold' : 'text-slate-500'
-          }`}
-        >
-          <FileText className="w-5 h-5" />
-          <span className="text-[10px] mt-0.5">Reports</span>
-        </button>
+          {/* 3. Stock (Center Column - Unobstructed) */}
+          <button
+            onClick={() => setActiveTab('inventory')}
+            className={`w-full h-full flex flex-col items-center justify-center py-1 transition min-h-[44px] relative ${
+              activeTab === 'inventory' ? 'text-emerald-700 font-bold' : 'text-slate-500 hover:text-slate-700'
+            }`}
+          >
+            <div className="relative">
+              <Package className="w-5 h-5" />
+              {lowStockProducts.length > 0 && (
+                <span className="absolute -top-1 -right-1.5 w-2 h-2 rounded-full bg-amber-500 ring-2 ring-white" />
+              )}
+            </div>
+            <span className="text-[10px] tracking-tight mt-0.5">Stock</span>
+          </button>
+
+          {/* 4. Debts */}
+          <button
+            onClick={() => setActiveTab('debts')}
+            className={`w-full h-full flex flex-col items-center justify-center py-1 transition min-h-[44px] relative ${
+              activeTab === 'debts' ? 'text-emerald-700 font-bold' : 'text-slate-500 hover:text-slate-700'
+            }`}
+          >
+            <div className="relative">
+              <CreditCard className="w-5 h-5" />
+              {activeDebtsCount > 0 && (
+                <span className="absolute -top-1 -right-1.5 w-2 h-2 rounded-full bg-rose-500 ring-2 ring-white" />
+              )}
+            </div>
+            <span className="text-[10px] tracking-tight mt-0.5">Debts</span>
+          </button>
+
+          {/* 5. Reports */}
+          <button
+            onClick={() => setActiveTab('reports')}
+            className={`w-full h-full flex flex-col items-center justify-center py-1 transition min-h-[44px] ${
+              activeTab === 'reports' ? 'text-emerald-700 font-bold' : 'text-slate-500 hover:text-slate-700'
+            }`}
+          >
+            <FileText className="w-5 h-5" />
+            <span className="text-[10px] tracking-tight mt-0.5">Reports</span>
+          </button>
+        </div>
       </nav>
 
       {/* MODALS */}

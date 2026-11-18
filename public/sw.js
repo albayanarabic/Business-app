@@ -1,8 +1,9 @@
-const CACHE_NAME = 'biztrack-ng-v2';
+const CACHE_NAME = 'biztrack-ng-v3';
 const APP_SHELL = [
   '/',
   '/index.html',
   '/manifest.json',
+  '/favicon.svg',
   '/favicon-32x32.png',
   '/icon-192.png',
   '/icon-512.png',

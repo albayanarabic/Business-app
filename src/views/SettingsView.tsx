@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
+import { BizTrackLogo } from '../components/BizTrackLogo';
 import {
   Building2,
   User,
@@ -329,9 +330,7 @@ export const SettingsView: React.FC = () => {
       {/* About Box */}
       <div className="p-4 bg-navy-950 text-slate-300 rounded-2xl text-xs flex items-center justify-between border border-slate-800">
         <div className="flex items-center space-x-3">
-          <div className="w-9 h-9 rounded-xl bg-emerald-600 flex items-center justify-center text-white font-bold shrink-0">
-            BT
-          </div>
+          <BizTrackLogo size="md" />
           <div>
             <h4 className="font-bold text-white text-sm">BizTrack Nigeria v1.0 Prototype</h4>
             <p className="text-slate-400 text-[11px]">
