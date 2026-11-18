@@ -39,13 +39,13 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({ sale, onClose }) => 
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 overflow-y-auto">
-      <div className="relative w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden my-8 animate-in fade-in zoom-in duration-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-2 sm:p-4 overflow-y-auto">
+      <div className="relative w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden my-4 sm:my-8 animate-in fade-in zoom-in duration-200">
         {/* Top Action Bar */}
-        <div className="flex items-center justify-between px-5 py-4 bg-slate-900 text-white">
+        <div className="flex items-center justify-between px-4 sm:px-5 py-3 sm:py-4 bg-slate-900 text-white">
           <div className="flex items-center space-x-2">
-            <span className="font-semibold text-sm tracking-wide uppercase text-slate-300">Transaction Receipt</span>
-            <span className="text-xs font-mono bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded border border-emerald-500/30">
+            <span className="font-semibold text-xs sm:text-sm tracking-wide uppercase text-slate-300">Transaction Receipt</span>
+            <span className="text-[11px] sm:text-xs font-mono bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded border border-emerald-500/30">
               {sale.saleNumber}
             </span>
           </div>
@@ -58,7 +58,7 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({ sale, onClose }) => 
         </div>
 
         {/* Printable Receipt Body */}
-        <div id="printable-receipt" className="p-6 bg-white text-slate-800">
+        <div id="printable-receipt" className="p-4 sm:p-6 bg-white text-slate-800">
           {/* Header */}
           <div className="text-center pb-5 border-b border-dashed border-slate-200">
             <h2 className="text-xl font-bold text-slate-900">{businessProfile.businessName}</h2>

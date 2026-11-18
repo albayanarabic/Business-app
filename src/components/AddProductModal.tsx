@@ -152,16 +152,16 @@ export const AddProductModal: React.FC<AddProductModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 overflow-y-auto">
-      <div className="relative w-full max-w-lg bg-white rounded-2xl shadow-2xl overflow-hidden my-8 animate-in fade-in zoom-in duration-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-2 sm:p-4 overflow-y-auto">
+      <div className="relative w-full max-w-lg bg-white rounded-2xl shadow-2xl overflow-hidden my-4 sm:my-8 animate-in fade-in zoom-in duration-200">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 bg-navy-900 text-white">
+        <div className="flex items-center justify-between px-4 sm:px-6 py-3.5 sm:py-4 bg-navy-900 text-white">
           <div className="flex items-center space-x-2">
             <div className="p-2 bg-emerald-500/20 text-emerald-400 rounded-lg">
               <PackagePlus className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="font-bold text-base text-white">
+              <h3 className="font-bold text-sm sm:text-base text-white">
                 {productToEdit ? 'Edit Product' : 'Add New Product'}
               </h3>
               <p className="text-xs text-slate-300">Inventory Catalog & Pricing</p>
@@ -176,7 +176,7 @@ export const AddProductModal: React.FC<AddProductModalProps> = ({
         </div>
 
         <form onSubmit={handleSubmit}>
-          <div className="p-6 space-y-4 max-h-[75vh] overflow-y-auto">
+          <div className="p-4 sm:p-6 space-y-4 max-h-[75vh] overflow-y-auto">
             {error && (
               <div className="p-3 bg-rose-50 border border-rose-200 text-rose-700 text-xs rounded-xl font-medium flex items-center gap-2">
                 <AlertTriangle className="w-4 h-4 shrink-0" />

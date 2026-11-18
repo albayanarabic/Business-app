@@ -48,6 +48,7 @@ export const RecordSaleModal: React.FC<RecordSaleModalProps> = ({
   const [customerPhone, setCustomerPhone] = useState('');
   const [notes, setNotes] = useState('');
   const [error, setError] = useState('');
+  const [mobileTab, setMobileTab] = useState<'products' | 'cart'>('products');
 
   // Extract distinct categories from inventory
   const categories = useMemo(() => {
@@ -197,10 +198,49 @@ export const RecordSaleModal: React.FC<RecordSaleModalProps> = ({
           </button>
         </div>
 
-        {/* Modal Body: Two column layout on desktop */}
-        <div className="grid grid-cols-1 md:grid-cols-12 flex-1 overflow-hidden">
+        {/* Mobile Tabs Switcher */}
+        <div className="flex md:hidden border-b border-slate-200 bg-slate-100 p-1 shrink-0">
+          <button
+            type="button"
+            onClick={() => setMobileTab('products')}
+            className={`flex-1 py-2 text-xs font-bold rounded-lg transition ${
+              mobileTab === 'products'
+                ? 'bg-white text-slate-900 shadow-sm'
+                : 'text-slate-600'
+            }`}
+          >
+            1. Select Products
+          </button>
+          <button
+            type="button"
+            onClick={() => setMobileTab('cart')}
+            className={`flex-1 py-2 text-xs font-bold rounded-lg transition flex items-center justify-center gap-1.5 ${
+              mobileTab === 'cart'
+                ? 'bg-emerald-600 text-white shadow-sm'
+                : 'text-slate-600'
+            }`}
+          >
+            <span>2. Cart & Checkout</span>
+            {cart.length > 0 && (
+              <span
+                className={`px-1.5 py-0.2 rounded-full text-[10px] font-bold ${
+                  mobileTab === 'cart' ? 'bg-white text-emerald-800' : 'bg-emerald-600 text-white'
+                }`}
+              >
+                {cart.length}
+              </span>
+            )}
+          </button>
+        </div>
+
+        {/* Modal Body: Two column layout on desktop, tabbed on mobile */}
+        <div className="flex flex-col md:grid md:grid-cols-12 flex-1 min-h-0 overflow-hidden">
           {/* Left Column: Product Catalog & Search (7 cols) */}
-          <div className="md:col-span-7 p-4 sm:p-6 border-b md:border-b-0 md:border-r border-slate-200 flex flex-col overflow-hidden bg-slate-50/50">
+          <div
+            className={`${
+              mobileTab === 'products' ? 'flex' : 'hidden'
+            } md:flex md:col-span-7 p-3 sm:p-6 border-b md:border-b-0 md:border-r border-slate-200 flex-col min-h-0 flex-1 overflow-hidden bg-slate-50/50`}
+          >
             {/* Search and Category Filter */}
             <div className="space-y-3 mb-4 shrink-0">
               <div className="relative">
@@ -304,10 +344,40 @@ export const RecordSaleModal: React.FC<RecordSaleModalProps> = ({
                 })
               )}
             </div>
+
+            {/* Mobile View Cart CTA at bottom of product list */}
+            {cart.length > 0 && (
+              <div className="md:hidden pt-3 border-t border-slate-200 mt-2 shrink-0">
+                <button
+                  type="button"
+                  onClick={() => setMobileTab('cart')}
+                  className="w-full py-2.5 px-4 bg-emerald-600 text-white rounded-xl text-xs font-bold flex items-center justify-between shadow-md active:scale-98 transition"
+                >
+                  <span>Proceed to Checkout ({cart.length} item{cart.length > 1 ? 's' : ''})</span>
+                  <span className="font-mono text-sm font-extrabold">{formatNaira(totalAmount)} →</span>
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Right Column: Cart, Customer & Checkout (5 cols) */}
-          <div className="md:col-span-5 p-4 sm:p-6 flex flex-col overflow-y-auto bg-white">
+          <div
+            className={`${
+              mobileTab === 'cart' ? 'flex' : 'hidden'
+            } md:flex md:col-span-5 p-3 sm:p-6 flex-col min-h-0 flex-1 overflow-y-auto bg-white`}
+          >
+            {/* Mobile Back Button */}
+            <div className="md:hidden flex items-center justify-between mb-3 pb-2 border-b border-slate-100">
+              <button
+                type="button"
+                onClick={() => setMobileTab('products')}
+                className="text-xs text-emerald-700 font-bold flex items-center gap-1 hover:underline"
+              >
+                ← Back to Products Catalog
+              </button>
+              <span className="text-xs font-bold text-slate-700">Checkout Step</span>
+            </div>
+
             <h4 className="font-bold text-sm text-slate-900 uppercase tracking-wider mb-3 flex items-center justify-between">
               <span>Sale Items ({cart.length})</span>
               {cart.length > 0 && (

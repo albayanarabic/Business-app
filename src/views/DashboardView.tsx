@@ -103,13 +103,13 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         <div className="absolute -right-10 -bottom-10 w-48 h-48 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
 
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 relative z-10">
-          <div className="flex items-center space-x-3.5">
+          <div className="flex items-center space-x-3.5 min-w-0">
             <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-700 flex items-center justify-center text-white shadow-lg shadow-emerald-900/30 font-extrabold text-xl shrink-0">
               {businessProfile.businessName ? businessProfile.businessName.charAt(0) : 'B'}
             </div>
-            <div>
+            <div className="min-w-0">
               <div className="flex items-center gap-2">
-                <h1 className="text-lg sm:text-xl font-bold tracking-tight text-white">
+                <h1 className="text-lg sm:text-xl font-bold tracking-tight text-white break-words">
                   {businessProfile.businessName}
                 </h1>
                 <span className="hidden sm:inline-block px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
@@ -123,7 +123,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           </div>
 
           {/* Date Selector Filter */}
-          <div className="flex items-center gap-1.5 self-start sm:self-auto bg-navy-800/80 p-1 rounded-xl border border-slate-700/60 text-xs">
+          <div className="flex items-center gap-1.5 self-start sm:self-auto max-w-full overflow-x-auto no-scrollbar bg-navy-800/80 p-1 rounded-xl border border-slate-700/60 text-xs">
             {(
               [
                 { id: 'today', label: 'Today' },
@@ -381,7 +381,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
       {/* TWO COLUMN SECTION: 7-Day Visual Trend + Recent Sales */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Left: 7-Day Performance Bar Chart (7 cols) */}
-        <div className="lg:col-span-7 bg-white p-5 sm:p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col">
+        <div className="lg:col-span-7 min-w-0 bg-white p-5 sm:p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col">
           <div className="flex items-center justify-between mb-4">
             <div>
               <h3 className="font-bold text-sm sm:text-base text-slate-900">
@@ -402,23 +402,23 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           </div>
 
           {/* Simple Visual Bar Chart */}
-          <div className="flex-1 min-h-[200px] flex items-end justify-between gap-2 pt-6 pb-2 px-1 border-b border-slate-100">
+          <div className="flex-1 min-w-0 min-h-[200px] max-w-full overflow-hidden flex items-end justify-between gap-1 pt-6 pb-2 px-1 border-b border-slate-100">
             {last7DaysData.map((d, index) => {
               const salesHeightPercent = (d.sales / maxChartVal) * 100;
               const expensesHeightPercent = (d.expenses / maxChartVal) * 100;
 
               return (
-                <div key={index} className="flex-1 flex flex-col items-center gap-2 group">
+                <div key={index} className="relative flex-1 min-w-0 flex flex-col items-center gap-2 group">
                   {/* Tooltip on hover */}
-                  <div className="opacity-0 group-hover:opacity-100 transition duration-150 absolute -top-8 bg-slate-900 text-white text-[10px] py-1 px-2 rounded pointer-events-none whitespace-nowrap z-20">
+                  <div className="hidden sm:block opacity-0 group-hover:opacity-100 transition duration-150 absolute -top-8 bg-slate-900 text-white text-[10px] py-1 px-2 rounded pointer-events-none whitespace-nowrap z-20">
                     {d.dayName}: Sales {formatNaira(d.sales)} | Exp {formatNaira(d.expenses)}
                   </div>
 
                   {/* Bars */}
-                  <div className="w-full flex items-end justify-center gap-1 h-36">
+                  <div className="w-full flex items-end justify-center gap-0.5 h-36">
                     <div
                       style={{ height: `${Math.max(4, salesHeightPercent)}%` }}
-                      className={`w-3.5 sm:w-5 rounded-t transition-all duration-300 ${
+                      className={`w-2.5 sm:w-5 rounded-t transition-all duration-300 ${
                         d.isToday
                           ? 'bg-emerald-600 shadow-sm'
                           : 'bg-emerald-500/80 hover:bg-emerald-600'
@@ -426,7 +426,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                     />
                     <div
                       style={{ height: `${Math.max(4, expensesHeightPercent)}%` }}
-                      className="w-3.5 sm:w-5 rounded-t bg-slate-300 hover:bg-slate-400 transition-all duration-300"
+                      className="w-2.5 sm:w-5 rounded-t bg-slate-300 hover:bg-slate-400 transition-all duration-300"
                     />
                   </div>
 

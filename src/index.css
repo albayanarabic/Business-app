@@ -3,9 +3,108 @@
 @tailwind utilities;
 
 @layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
   body {
     @apply bg-slate-50 text-slate-800 antialiased font-sans;
+    min-width: 320px;
+    overflow-x: hidden;
+    overflow-x: clip;
   }
+
+  #root {
+    min-height: 100vh;
+    min-height: 100dvh;
+    width: 100%;
+    min-width: 0;
+  }
+
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  input,
+  select,
+  textarea {
+    min-width: 0;
+    font-size: 16px !important;
+  }
+
+  @media (min-width: 640px) {
+    input,
+    select,
+    textarea {
+      font-size: inherit !important;
+    }
+  }
+
+  button,
+  a {
+    touch-action: manipulation;
+  }
+
+  img,
+  svg,
+  canvas {
+    max-width: 100%;
+  }
+}
+
+@layer utilities {
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  .pb-safe {
+    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 4rem);
+  }
+
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@media (max-width: 359px) {
+  .compact-kpi-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.fixed.inset-0.z-50 > .relative {
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100dvh - 1rem);
+  margin-block: 0.5rem;
+}
+
+.fixed.inset-0.z-50 > .relative > form {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.fixed.inset-0.z-50 > .relative form > div[class*="max-h-"] {
+  flex: 1 1 auto;
+  min-height: 0;
+  max-height: none;
+}
+
+.fixed.inset-0.z-50 > .relative > div.p-6 {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
 }
 
 /* Custom scrollbars */

@@ -1,5 +1,5 @@
-const CACHE_NAME = 'biztrack-ng-v1';
-const STATIC_ASSETS = [
+const CACHE_NAME = 'biztrack-ng-v2';
+const APP_SHELL = [
   '/',
   '/index.html',
   '/manifest.json',
@@ -8,76 +8,68 @@ const STATIC_ASSETS = [
   '/icon-512.png',
   '/icon-maskable-192.png',
   '/icon-maskable-512.png',
-  '/apple-touch-icon.png'
+  '/apple-touch-icon.png',
 ];
 
-// Install: Cache essential assets
 self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(STATIC_ASSETS).catch((err) => {
-        console.warn('Pre-cache error (non-fatal):', err);
-      });
-    }).then(() => self.skipWaiting())
-  );
+  event.waitUntil((async () => {
+    const cache = await caches.open(CACHE_NAME);
+    await cache.addAll(APP_SHELL);
+
+    const index = await cache.match('/index.html');
+    const html = await index.text();
+    const assets = [...html.matchAll(/(?:src|href)="([^"]+\.(?:js|css))"/g)]
+      .map((match) => match[1]);
+    await cache.addAll(assets);
+    await self.skipWaiting();
+  })());
 });
 
-// Activate: Purge older caches
 self.addEventListener('activate', (event) => {
-  event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      return Promise.all(
-        cacheNames.map((cache) => {
-          if (cache !== CACHE_NAME) {
-            return caches.delete(cache);
-          }
-        })
-      );
-    }).then(() => self.clients.claim())
-  );
+  event.waitUntil((async () => {
+    const cacheNames = await caches.keys();
+    await Promise.all(
+      cacheNames
+        .filter((name) => name.startsWith('biztrack-ng-') && name !== CACHE_NAME)
+        .map((name) => caches.delete(name))
+    );
+    await self.clients.claim();
+  })());
 });
 
-// Fetch: Network first with Cache fallback for navigation; Stale-While-Revalidate for assets
 self.addEventListener('fetch', (event) => {
-  const req = event.request;
+  const request = event.request;
+  const url = new URL(request.url);
 
-  // Only handle GET requests
-  if (req.method !== 'GET') return;
+  if (request.method !== 'GET' || url.origin !== self.location.origin) return;
 
-  const url = new URL(req.url);
-
-  // For HTML navigation requests: Network first, fall back to cached index.html
-  if (req.mode === 'navigate') {
-    event.respondWith(
-      fetch(req)
-        .then((networkResponse) => {
-          if (networkResponse && networkResponse.status === 200) {
-            const responseClone = networkResponse.clone();
-            caches.open(CACHE_NAME).then((cache) => cache.put(req, responseClone));
-          }
-          return networkResponse;
-        })
-        .catch(() => {
-          return caches.match('/index.html') || caches.match('/');
-        })
-    );
+  if (request.mode === 'navigate') {
+    event.respondWith((async () => {
+      try {
+        const response = await fetch(request);
+        if (response.ok) {
+          const cache = await caches.open(CACHE_NAME);
+          await cache.put('/index.html', response.clone());
+        }
+        return response;
+      } catch {
+        const cachedPage = await caches.match('/index.html');
+        return cachedPage || Response.error();
+      }
+    })());
     return;
   }
 
-  // For static assets: Stale-While-Revalidate
-  event.respondWith(
-    caches.match(req).then((cachedResponse) => {
-      const fetchPromise = fetch(req)
-        .then((networkResponse) => {
-          if (networkResponse && networkResponse.status === 200) {
-            const responseClone = networkResponse.clone();
-            caches.open(CACHE_NAME).then((cache) => cache.put(req, responseClone));
-          }
-          return networkResponse;
-        })
-        .catch(() => cachedResponse);
+  event.respondWith((async () => {
+    const cachedResponse = await caches.match(request);
+    const fetchResponse = fetch(request).then(async (response) => {
+      if (response.ok) {
+        const cache = await caches.open(CACHE_NAME);
+        await cache.put(request, response.clone());
+      }
+      return response;
+    });
 
-      return cachedResponse || fetchPromise;
-    })
-  );
+    return cachedResponse || fetchResponse;
+  })());
 });

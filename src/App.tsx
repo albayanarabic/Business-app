@@ -86,13 +86,14 @@ const AppContent: React.FC = () => {
       setInstallPrompt(e);
     };
 
-    window.addEventListener('beforeinstallprompt', handleBeforeInstall);
-
-    window.addEventListener('appinstalled', () => {
+    const handleAppInstalled = () => {
       setIsAppInstalled(true);
       setInstallPrompt(null);
       setShowInstallBanner(false);
-    });
+    };
+
+    window.addEventListener('beforeinstallprompt', handleBeforeInstall);
+    window.addEventListener('appinstalled', handleAppInstalled);
 
     // Handle initial URL parameters (PWA shortcuts)
     const urlParams = new URLSearchParams(window.location.search);
@@ -109,6 +110,7 @@ const AppContent: React.FC = () => {
 
     return () => {
       window.removeEventListener('beforeinstallprompt', handleBeforeInstall);
+      window.removeEventListener('appinstalled', handleAppInstalled);
     };
   }, []);
 
@@ -163,7 +165,7 @@ const AppContent: React.FC = () => {
       <header className="sticky top-0 z-40 bg-navy-950 text-white border-b border-slate-800 shadow-md">
         <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           {/* Logo & Brand */}
-          <div className="flex items-center space-x-2.5 sm:space-x-3">
+          <div className="flex items-center space-x-2.5 sm:space-x-3 min-w-0">
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="lg:hidden p-2 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition min-w-[44px] min-h-[44px] flex items-center justify-center"
@@ -174,12 +176,12 @@ const AppContent: React.FC = () => {
 
             <div
               onClick={() => setActiveTab('dashboard')}
-              className="flex items-center space-x-2.5 cursor-pointer group"
+              className="flex items-center space-x-2.5 cursor-pointer group min-w-0"
             >
               <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-600 to-emerald-400 flex items-center justify-center text-white shadow-md font-extrabold text-base tracking-wider group-hover:scale-105 transition">
                 BT
               </div>
-              <div>
+              <div className="min-w-0">
                 <span className="font-extrabold text-base tracking-tight text-white block leading-tight">
                   BizTrack<span className="text-emerald-400">.ng</span>
                 </span>
@@ -191,7 +193,7 @@ const AppContent: React.FC = () => {
           </div>
 
           {/* Right Header Actions */}
-          <div className="flex items-center space-x-2 sm:space-x-3">
+          <div className="flex items-center space-x-2 sm:space-x-3 shrink-0">
             {/* Install App Button if not installed */}
             {!isAppInstalled && (
               <button
@@ -210,7 +212,7 @@ const AppContent: React.FC = () => {
               className="flex items-center gap-1.5 py-2 px-3 sm:px-3.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition shadow-sm active:scale-95 min-h-[40px]"
             >
               <Plus className="w-4 h-4" />
-              <span>Record Sale</span>
+              <span className="max-[359px]:hidden">Record Sale</span>
             </button>
 
             {/* Notifications Pill for Low Stock or Active Debts */}
@@ -219,7 +221,7 @@ const AppContent: React.FC = () => {
                 onClick={() =>
                   setActiveTab(lowStockProducts.length > 0 ? 'inventory' : 'debts')
                 }
-                className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 relative transition min-w-[40px] min-h-[40px] flex items-center justify-center"
+                className="max-[359px]:hidden p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 relative transition min-w-[40px] min-h-[40px] flex items-center justify-center"
                 title={`${lowStockProducts.length} low stock items, ${activeDebtsCount} debtors`}
               >
                 <Bell className="w-4 h-4" />
@@ -230,7 +232,7 @@ const AppContent: React.FC = () => {
             {/* Profile Avatar / Quick Switch */}
             <div
               onClick={() => setActiveTab('settings')}
-              className="flex items-center space-x-2 p-1 pl-2 bg-slate-800/80 hover:bg-slate-800 rounded-xl cursor-pointer border border-slate-700/50 transition"
+              className="max-[359px]:hidden flex items-center space-x-2 p-1 pl-2 bg-slate-800/80 hover:bg-slate-800 rounded-xl cursor-pointer border border-slate-700/50 transition"
             >
               <span className="text-xs font-semibold text-slate-200 hidden md:inline truncate max-w-[140px]">
                 {businessProfile.businessName}
@@ -275,7 +277,7 @@ const AppContent: React.FC = () => {
       )}
 
       {/* Main Body Layout: Sidebar + Main View Container */}
-      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 w-full flex-1 flex pt-3 sm:pt-6 gap-6">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 w-full flex-1 flex pt-3 sm:pt-6 gap-6 min-w-0 overflow-x-hidden">
         {/* Desktop Sidebar (hidden on mobile, visible on lg) */}
         <aside className="hidden lg:block w-64 shrink-0">
           <div className="sticky top-24 bg-white rounded-2xl border border-slate-200 p-3 shadow-sm space-y-1">
@@ -339,7 +341,7 @@ const AppContent: React.FC = () => {
 
         {/* Mobile Dropdown Menu (when hamburger is clicked) */}
         {mobileMenuOpen && (
-          <div className="lg:hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex flex-col justify-start p-4 pt-16">
+          <div className="lg:hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex flex-col justify-start p-4 pt-16 overflow-y-auto">
             <div className="bg-white rounded-2xl p-4 shadow-2xl space-y-1 max-w-sm w-full mx-auto animate-in fade-in zoom-in duration-150">
               <div className="flex justify-between items-center pb-2 border-b border-slate-100">
                 <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">

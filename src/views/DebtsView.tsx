@@ -77,7 +77,7 @@ export const DebtsView: React.FC<DebtsViewProps> = ({
       </div>
 
       {/* KPI Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+      <div className="compact-kpi-grid grid grid-cols-2 lg:grid-cols-4 gap-3">
         <div className="p-4 bg-white rounded-2xl border border-slate-200 shadow-sm">
           <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">
             Total Outstanding Debts

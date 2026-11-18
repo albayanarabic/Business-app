@@ -286,7 +286,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
       if (existingDebt) {
         // Append to existing debt
-        const updatedTotal = existingDebt.totalDebt + balanceDue;
+        const updatedTotal = existingDebt.totalDebt + totalAmount;
         const updatedBalance = existingDebt.balanceDue + balanceDue;
 
         setDebts((prev) =>
@@ -295,7 +295,21 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
               ? {
                   ...d,
                   totalDebt: updatedTotal,
+                  amountPaid: d.amountPaid + amountPaid,
                   balanceDue: updatedBalance,
+                  repayments: amountPaid > 0
+                    ? [
+                        {
+                          id: `rep-${Date.now()}`,
+                          debtId: existingDebt.id,
+                          amount: amountPaid,
+                          date: saleDate,
+                          paymentMethod: data.paymentMethod === 'Credit' ? 'Cash' : data.paymentMethod,
+                          notes: `Initial deposit for Sale #${saleNumber}`,
+                        },
+                        ...d.repayments,
+                      ]
+                    : d.repayments,
                   notes: `${d.notes ? d.notes + ' | ' : ''}Added ₦${balanceDue.toLocaleString()} from Sale #${saleNumber}`,
                 }
               : d
