@@ -1,0 +1,66 @@
+{
+  "id": "/?source=pwa",
+  "name": "BizTrack Nigeria — Digital Business Management",
+  "short_name": "BizTrack",
+  "description": "Modern business management and record keeping designed for Nigerian small and medium businesses. Track sales, expenses, profits and customer debts.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
+  "orientation": "portrait-primary",
+  "background_color": "#0A1128",
+  "theme_color": "#0A1128",
+  "lang": "en-NG",
+  "categories": ["business", "finance", "productivity", "utilities"],
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-maskable-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Record a Sale",
+      "short_name": "New Sale",
+      "description": "Record a new customer transaction",
+      "url": "/?action=new-sale",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Customer Debts",
+      "short_name": "Debts",
+      "description": "View owing customers and send WhatsApp reminders",
+      "url": "/?tab=debts",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Add Expense",
+      "short_name": "Expense",
+      "description": "Log fuel, rent or shop expenses",
+      "url": "/?action=new-expense",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    }
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false
+}
