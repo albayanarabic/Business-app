@@ -20,6 +20,7 @@ import { RepaymentModal } from './components/RepaymentModal';
 import { ReceiptModal } from './components/ReceiptModal';
 import { WhatsAppReminderModal } from './components/WhatsAppReminderModal';
 import { BizTrackLogo } from './components/BizTrackLogo';
+import { BizTrackAssistant } from './components/BizTrackAssistant';
 
 import {
   LayoutDashboard,
@@ -538,6 +539,8 @@ const AppContent: React.FC = () => {
           </button>
         </div>
       </nav>
+
+      <BizTrackAssistant />
 
       {/* MODALS */}
       {/* 1. Record Sale Modal */}

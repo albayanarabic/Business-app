@@ -13,6 +13,7 @@
 - **Mobile-First Android Navigation:** Touch-friendly bottom navigation bar, quick action floaters, and responsive forms designed for Android devices.
 - **Direct WhatsApp Reminders:** Generates polite, culturally authentic Nigerian business payment reminders via standard WhatsApp web/app links (`https://wa.me/`).
 - **Naira Formatting:** Authentic Nigerian Naira (`₦`) currency formatting throughout.
+- **BizTrack AI (local mode):** Ask deterministic questions about records saved in this browser and prepare inventory, sales, expense, and repayment actions for confirmation. No AI provider, sign-in, or cross-device sync is configured; the assistant does not send business records to an AI service.
 
 ---
 
@@ -86,6 +87,9 @@ npm install
 
 # Start development server
 npm run dev
+
+# Run focused BizTrack AI parsing checks
+npm run test:assistant
 
 # Run automated business flow verification test
 node test-business-flow.js
