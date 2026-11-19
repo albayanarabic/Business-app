@@ -1,15 +1,18 @@
-const CACHE_NAME = 'biztrack-ng-v3';
+const CACHE_NAME = 'biztrack-ng-v4';
 const APP_SHELL = [
   '/',
   '/index.html',
   '/manifest.json',
-  '/favicon.svg',
+  '/favicon.ico',
+  '/favicon-16x16.png',
   '/favicon-32x32.png',
   '/icon-192.png',
   '/icon-512.png',
   '/icon-maskable-192.png',
   '/icon-maskable-512.png',
   '/apple-touch-icon.png',
+  '/adaptive-icon-foreground.png',
+  '/adaptive-icon-background.png',
 ];
 
 self.addEventListener('install', (event) => {
