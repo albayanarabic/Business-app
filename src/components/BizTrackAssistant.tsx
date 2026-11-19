@@ -82,6 +82,33 @@ type Pending =
       intent: Extract<AssistantIntent, { type: 'addProduct' }>;
     };
 
+interface SpeechRecognitionEventLike {
+  results: ArrayLike<ArrayLike<{ transcript: string }> & { isFinal: boolean }>;
+}
+
+interface SpeechRecognitionErrorLike {
+  error: string;
+}
+
+interface SpeechRecognitionLike {
+  lang: string;
+  interimResults: boolean;
+  continuous: boolean;
+  onstart: (() => void) | null;
+  onresult: ((event: SpeechRecognitionEventLike) => void) | null;
+  onerror: ((event: SpeechRecognitionErrorLike) => void) | null;
+  onend: (() => void) | null;
+  start: () => void;
+  stop: () => void;
+  abort: () => void;
+}
+
+type SpeechRecognitionConstructor = new () => SpeechRecognitionLike;
+type WindowWithSpeechRecognition = Window & {
+  SpeechRecognition?: SpeechRecognitionConstructor;
+  webkitSpeechRecognition?: SpeechRecognitionConstructor;
+};
+
 const INITIAL_MESSAGE: ChatMessage = {
   id: 0,
   role: 'assistant',
@@ -139,6 +166,8 @@ export const BizTrackAssistant = () => {
   const [pending, setPending] = useState<Pending | null>(null);
   const [isOnline, setIsOnline] = useState(() => navigator.onLine);
   const [isSending, setIsSending] = useState(false);
+  const [isListening, setIsListening] = useState(false);
+  const recognitionRef = useRef<SpeechRecognitionLike | null>(null);
   const nextId = useRef(1);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -155,6 +184,8 @@ export const BizTrackAssistant = () => {
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
   }, [messages, preview]);
+
+  useEffect(() => () => recognitionRef.current?.abort(), []);
 
   const addMessage = (
     role: ChatMessage['role'],
@@ -635,6 +666,11 @@ export const BizTrackAssistant = () => {
   const sendMessage = (value: string, displayText?: string) => {
     const text = value.trim();
     if (!text || isSending) return;
+    if (recognitionRef.current) {
+      recognitionRef.current.stop();
+      recognitionRef.current = null;
+      setIsListening(false);
+    }
     setDraft('');
     addMessage('user', displayText || text);
     setIsSending(true);
@@ -667,6 +703,69 @@ export const BizTrackAssistant = () => {
     if (event.key === 'Enter' && !event.shiftKey) {
       event.preventDefault();
       sendMessage(draft);
+    }
+  };
+
+  const toggleVoiceInput = () => {
+    if (recognitionRef.current && isListening) {
+      recognitionRef.current.stop();
+      return;
+    }
+
+    const speechWindow = window as WindowWithSpeechRecognition;
+    const Recognition =
+      speechWindow.SpeechRecognition || speechWindow.webkitSpeechRecognition;
+    if (!Recognition) {
+      addMessage(
+        'assistant',
+        'Voice input is not supported by this browser. Try a current version of Chrome or Edge, or type your message instead.'
+      );
+      return;
+    }
+
+    const recognition = new Recognition();
+    recognition.lang = 'en-NG';
+    recognition.interimResults = true;
+    recognition.continuous = false;
+    recognition.onstart = () => setIsListening(true);
+    recognition.onresult = (event) => {
+      let transcript = '';
+      for (let index = 0; index < event.results.length; index += 1) {
+        transcript += event.results[index][0]?.transcript || '';
+      }
+      if (transcript.trim()) setDraft(transcript.trim());
+    };
+    recognition.onerror = (event) => {
+      setIsListening(false);
+      recognitionRef.current = null;
+      if (event.error === 'aborted') return;
+      const errorMessage =
+        event.error === 'not-allowed' || event.error === 'service-not-allowed'
+          ? 'Microphone access was blocked. Allow microphone access in your browser settings, then try again.'
+          : event.error === 'no-speech'
+            ? 'I didn’t hear anything. Tap the microphone and try speaking again.'
+            : event.error === 'network'
+              ? 'The browser speech service could not be reached. Check your connection or type your message instead.'
+              : `Voice input stopped (${event.error}). You can try again or type your message.`;
+      addMessage('assistant', errorMessage);
+    };
+    recognition.onend = () => {
+      setIsListening(false);
+      recognitionRef.current = null;
+    };
+
+    recognitionRef.current = recognition;
+    try {
+      recognition.start();
+    } catch (error) {
+      recognitionRef.current = null;
+      setIsListening(false);
+      addMessage(
+        'assistant',
+        error instanceof Error
+          ? `Could not start voice input: ${error.message}`
+          : 'Could not start voice input. Check microphone permissions and try again.'
+      );
     }
   };
 
@@ -849,6 +948,9 @@ export const BizTrackAssistant = () => {
   };
 
   const closeAssistant = () => {
+    recognitionRef.current?.abort();
+    recognitionRef.current = null;
+    setIsListening(false);
     setIsOpen(false);
     setIsMinimized(false);
   };
@@ -860,28 +962,31 @@ export const BizTrackAssistant = () => {
           type="button"
           onClick={() => setIsOpen(true)}
           aria-label="Open BizTrack AI assistant"
-          className="fixed bottom-[calc(4.5rem+env(safe-area-inset-bottom,0px))] right-4 z-[45] flex h-14 items-center gap-2 rounded-full border-2 border-white bg-navy-900 px-4 text-white shadow-xl shadow-navy-950/25 transition hover:-translate-y-0.5 hover:bg-navy-800 focus:outline-none focus:ring-4 focus:ring-emerald-300 lg:bottom-6 lg:right-6"
+          title="BizTrack AI"
+          className="fixed bottom-[calc(4.5rem+env(safe-area-inset-bottom,0px))] right-4 z-[45] flex h-12 w-12 items-center justify-center rounded-full border-2 border-white bg-navy-900 text-white shadow-lg shadow-navy-950/20 transition hover:-translate-y-0.5 hover:bg-navy-800 focus:outline-none focus:ring-4 focus:ring-emerald-300 lg:bottom-6 lg:right-6"
         >
           <Sparkles className="h-5 w-5 text-emerald-300" />
-          <span className="text-sm font-bold">BizTrack AI</span>
+          <span className="sr-only">BizTrack AI</span>
         </button>
       )}
 
       {isOpen && isMinimized && (
-        <div className="fixed bottom-[calc(4.5rem+env(safe-area-inset-bottom,0px))] right-4 z-[60] flex items-center gap-1 rounded-full border border-slate-200 bg-white p-1.5 shadow-xl lg:bottom-6 lg:right-6">
+        <div className="fixed bottom-[calc(4.5rem+env(safe-area-inset-bottom,0px))] right-4 z-[60] flex items-center gap-1 rounded-full border border-slate-200 bg-white p-1 shadow-lg lg:bottom-6 lg:right-6">
           <button
             type="button"
             onClick={() => setIsMinimized(false)}
-            className="flex min-h-10 items-center gap-2 rounded-full bg-navy-900 px-4 text-sm font-bold text-white"
+            title="Reopen BizTrack AI"
+            aria-label="Reopen BizTrack AI"
+            className="flex h-10 w-10 items-center justify-center rounded-full bg-navy-900 text-white hover:bg-navy-800"
           >
             <Bot className="h-4 w-4 text-emerald-300" />
-            BizTrack AI
           </button>
           <button
             type="button"
             onClick={closeAssistant}
             className="flex h-10 w-10 items-center justify-center rounded-full text-slate-500 hover:bg-slate-100"
             aria-label="Close BizTrack AI"
+            title="Close BizTrack AI"
           >
             <X className="h-4 w-4" />
           </button>
@@ -1000,10 +1105,15 @@ export const BizTrackAssistant = () => {
                 />
                 <button
                   type="button"
-                  disabled
-                  title="Voice input is not configured"
-                  aria-label="Voice input not configured"
-                  className="mb-1.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-slate-300"
+                  onClick={toggleVoiceInput}
+                  title={isListening ? 'Stop voice input' : 'Speak your message'}
+                  aria-label={isListening ? 'Stop voice input' : 'Speak your message'}
+                  aria-pressed={isListening}
+                  className={`mb-1.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full transition ${
+                    isListening
+                      ? 'animate-pulse bg-rose-100 text-rose-700'
+                      : 'text-slate-500 hover:bg-emerald-50 hover:text-emerald-700'
+                  }`}
                 >
                   <Mic className="h-4 w-4" />
                 </button>
@@ -1017,9 +1127,12 @@ export const BizTrackAssistant = () => {
                 {isSending ? <ChevronDown className="h-5 w-5 animate-pulse" /> : <Send className="h-5 w-5" />}
               </button>
             </form>
+            <p aria-live="polite" className="mt-1 h-4 text-center text-[10px] text-emerald-700">
+              {isListening ? 'Listening… Tap the microphone when you are done.' : ''}
+            </p>
             <p className="mt-2 flex items-center justify-center gap-1 text-[10px] text-slate-400">
               <Package className="h-3 w-3" />
-              Local records (may include samples) · actions require confirmation
+              Local records (may include samples) · voice recognition may use your browser’s online service
               <CircleHelp className="h-3 w-3" />
             </p>
           </div>

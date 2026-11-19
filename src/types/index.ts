@@ -8,6 +8,7 @@ export interface Product {
   minStockLevel: number; // Threshold for low stock warning
   unit: string; // e.g., 'bags', 'cartons', 'tins', 'bottles', 'pieces', 'packs'
   barcode?: string;
+  imageUrl?: string;
   createdAt: string;
   updatedAt?: string;
 }

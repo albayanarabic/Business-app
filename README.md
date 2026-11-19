@@ -56,17 +56,28 @@ The project includes a ready-to-use `vercel.json` configured for Single Page App
 
 ---
 
-## 🔑 Environment Variables
+## 🔑 Supabase Configuration
 
-For this prototype, **no required environment variables are needed** to deploy and run the full application. 
+The Vite client reads `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`. The latter accepts a Supabase publishable key or legacy anon key; never use a service-role key in the browser.
 
-All database operations (products, sales, debts, repayments, expenses, and business profile) are handled by the browser's persistent storage engine with preloaded Nigerian market sample data.
+For local development, copy `.env.example` to `.env.local` and set:
 
-If you connect an optional backend service (such as Supabase) in a future development phase:
-| Variable Name | Required | Description |
-| :--- | :--- | :--- |
-| `VITE_SUPABASE_URL` | Optional | Your Supabase project URL |
-| `VITE_SUPABASE_ANON_KEY` | Optional | Your Supabase anon public API key |
+```env
+VITE_SUPABASE_URL=https://attgbdoqgkdxtxqjicgv.supabase.co
+VITE_SUPABASE_ANON_KEY=<publishable-key-from-Supabase-Project-Settings>
+```
+
+Keep `.env.local` out of Git. In Vercel, add both variables to the BizTrack project's **Production**, **Preview**, and **Development** environments, then redeploy.
+
+### Database setup
+
+1. In Supabase, inspect the existing tables, policies, and project backup before applying a migration. Do not run a migration against unidentified or valuable existing records.
+2. Review and apply `supabase/schema.sql` in the Supabase SQL Editor. It defines profiles, businesses, memberships, products, sales/items, customers, debts/repayments, expenses, ownership columns, and RLS policies.
+3. Check the SQL Editor for errors, then test registration, login, and account isolation with two test accounts before using production records.
+
+Legacy browser records have no known account owner. After signing in, BizTrack offers migration to that account's business; the local copy is retained. The migration uses stable record IDs and does not replace existing cloud rows with matching IDs.
+
+Cloud auth and sync require a reachable Supabase Data API and a valid key. A production Vercel deployment also requires these environment variables; local build success alone does not verify cloud behavior.
 
 ---
 

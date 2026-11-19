@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
+import { useAuth } from '../context/AuthContext';
 import { BizTrackLogo } from '../components/BizTrackLogo';
+import { AuthModal } from '../components/AuthModal';
 import {
   Building2,
   User,
@@ -15,6 +17,8 @@ import {
   CheckCircle2,
   Sparkles,
   ShieldCheck,
+  Cloud,
+  RefreshCw,
 } from 'lucide-react';
 
 export const SettingsView: React.FC = () => {
@@ -27,11 +31,15 @@ export const SettingsView: React.FC = () => {
     sales,
     debts,
     expenses,
+    syncStatus,
+    pendingCount,
   } = useApp();
+  const { user, business } = useAuth();
 
   const [formData, setFormData] = useState(businessProfile);
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [resetSuccess, setResetSuccess] = useState(false);
+  const [accountModalOpen, setAccountModalOpen] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -113,6 +121,39 @@ export const SettingsView: React.FC = () => {
           <span>Application restored to realistic Nigerian provision store sample data!</span>
         </div>
       )}
+
+      <section className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex items-start gap-3">
+          <div className="p-2.5 rounded-xl bg-emerald-50 text-emerald-700">
+            <Cloud className="w-5 h-5" />
+          </div>
+          <div>
+            <h3 className="font-bold text-sm text-slate-900">Account & cloud sync</h3>
+            <p className="text-xs text-slate-500 mt-1">
+              {user
+                ? `${user.email} · ${business?.name ?? 'Loading business'}`
+                : 'Sign in to back up your records and sync across devices.'}
+            </p>
+            {user && (
+              <p className={`text-xs mt-1 font-semibold ${
+                syncStatus === 'failed' ? 'text-rose-600' : syncStatus === 'offline' ? 'text-amber-600' : 'text-emerald-700'
+              }`}>
+                {syncStatus === 'syncing' ? 'Syncing…' : syncStatus === 'failed' ? 'Sync failed' :
+                  syncStatus === 'offline' ? 'Offline; changes are queued' :
+                    syncStatus === 'pending' ? `${pendingCount} change${pendingCount === 1 ? '' : 's'} pending` : 'Synced'}
+              </p>
+            )}
+          </div>
+        </div>
+        <button
+          type="button"
+          onClick={() => setAccountModalOpen(true)}
+          className="shrink-0 inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-2.5 text-xs font-bold text-white hover:bg-emerald-700"
+        >
+          <RefreshCw className="w-4 h-4" />
+          {user ? 'Manage Account' : 'Sign In / Create Account'}
+        </button>
+      </section>
 
       {/* Profile Form */}
       <form onSubmit={handleSubmit} className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-6">
@@ -342,6 +383,7 @@ export const SettingsView: React.FC = () => {
           PROTOTYPE READY
         </span>
       </div>
+      <AuthModal isOpen={accountModalOpen} onClose={() => setAccountModalOpen(false)} />
     </div>
   );
 };
