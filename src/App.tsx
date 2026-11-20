@@ -541,7 +541,14 @@ const AppContent: React.FC = () => {
         </div>
       </nav>
 
-      <BizTrackAssistant />
+      {/* BizTrack Smart Offline & Voice AI Assistant */}
+      <BizTrackAssistant
+        onNavigate={(tab) => setActiveTab(tab as Tab)}
+        onOpenRecordSale={() => setIsRecordSaleOpen(true)}
+        onOpenAddProduct={() => handleOpenAddProduct()}
+        onOpenAddExpense={() => setIsAddExpenseOpen(true)}
+        onOpenAddDebt={() => setIsAddDebtOpen(true)}
+      />
 
       {/* MODALS */}
       {/* 1. Record Sale Modal */}
