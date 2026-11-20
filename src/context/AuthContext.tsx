@@ -187,7 +187,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   }, [isConfigured, resolveBusiness]);
 
   const signIn = async (email: string, password: string): Promise<{ error?: string }> => {
-    if (!isConfigured) return { error: 'Supabase credentials are not configured in .env.local' };
+    if (!isConfigured) return { error: 'Supabase credentials are not configured in environment variables.' };
     try {
       const { data, error } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
       if (error) return { error: error.message };
@@ -205,7 +205,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     businessName: string,
     fullName: string
   ): Promise<{ error?: string; message?: string }> => {
-    if (!isConfigured) return { error: 'Supabase credentials are not configured in .env.local' };
+    if (!isConfigured) return { error: 'Supabase credentials are not configured in environment variables.' };
     try {
       const { data, error } = await supabase.auth.signUp({
         email: email.trim(),
